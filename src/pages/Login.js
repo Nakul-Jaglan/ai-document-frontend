@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -9,9 +9,27 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showServerStartup, setShowServerStartup] = useState(false);
+  const [countdown, setCountdown] = useState(60); // 60 seconds = 1 minute
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+
+  // Timer effect for countdown
+  useEffect(() => {
+    let timer;
+    if (showServerStartup && countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      setShowServerStartup(false);
+      setCountdown(60);
+    }
+    return () => {
+      clearInterval(timer);
+    };
+  }, [showServerStartup, countdown]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +41,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // First check if we should show the server startup notification
+    if (!showServerStartup) {
+      setShowServerStartup(true);
+      return;
+    }
+    
+    // If we've already shown the notification and timer is complete
     setError('');
     setLoading(true);
 
@@ -42,6 +68,31 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      {/* Server startup notification overlay */}
+      {showServerStartup && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full text-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Please wait</h3>
+            <p className="mb-6 text-gray-600">
+              Our backend server is starting up. This may take up to 1 minute. 
+              Once the timer is over, you can press Login again to complete the process.
+            </p>
+            <div className="text-4xl font-bold text-blue-600 mb-6">
+              {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
+            </div>
+            <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
+              <div 
+                className="h-full bg-blue-600 rounded-full transition-all duration-1000 ease-linear"
+                style={{ width: `${((60 - countdown) / 60) * 100}%` }}
+              ></div>
+            </div>
+            <p className="text-sm text-gray-500">
+              This is only required when our server has been inactive.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
@@ -82,6 +133,7 @@ const Login = () => {
                   value={formData.username}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  disabled={showServerStartup}
                 />
               </div>
             </div>
@@ -102,6 +154,7 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  disabled={showServerStartup}
                 />
               </div>
             </div>
@@ -109,7 +162,7 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || (showServerStartup && countdown > 0)}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
               >
                 {loading ? 'Signing in...' : 'Sign in'}
@@ -122,4 +175,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;
