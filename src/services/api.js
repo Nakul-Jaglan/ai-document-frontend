@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_URL+ '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -50,27 +50,27 @@ api.interceptors.response.use(
 );
 
 export const auth = {
-  login: (credentials) => api.post('/api/auth/login/', credentials),
-  register: (userData) => api.post('/api/auth/register/', userData),
-  getCurrentUser: () => api.get('/api/auth/user/'),
-  refreshToken: (refresh) => api.post('/api/auth/refresh/', { refresh }),
+  login: (credentials) => api.post('/auth/login/', credentials),
+  register: (userData) => api.post('/auth/register/', userData),
+  getCurrentUser: () => api.get('/auth/user/'),
+  refreshToken: (refresh) => api.post('/auth/refresh/', { refresh }),
 };
 
 export const documents = {
-  getAll: () => api.get('/api/documents/'),
-  getById: (id) => api.get(`/api/documents/${id}/`),
-  upload: (formData) => api.post('/api/documents/', formData, {
+  getAll: () => api.get('/documents/'),
+  getById: (id) => api.get(`/documents/${id}/`),
+  upload: (formData) => api.post('/documents/', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   }),
-  update: (id, data) => api.patch(`/api/documents/${id}/`, data),
-  delete: (id) => api.delete(`/api/documents/${id}/`),
-  download: (id) => api.get(`/api/documents/${id}/download/`, {
+  update: (id, data) => api.patch(`/documents/${id}/`, data),
+  delete: (id) => api.delete(`/documents/${id}/`),
+  download: (id) => api.get(`/documents/${id}/download/`, {
     responseType: 'blob',
   }),
   askQuestion: (id, question) =>
-    api.post(`/api/documents/${id}/ask/`, { question }, {
+    api.post(`/documents/${id}/ask/`, { question }, {
       timeout: 30000, // 30 second timeout
       retry: 3,
       retryDelay: 1000,
