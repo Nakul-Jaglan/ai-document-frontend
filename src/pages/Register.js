@@ -16,6 +16,21 @@ const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
 
+  // Check if we need to show server startup notification
+  const shouldShowStartupNotification = () => {
+    const lastServerStartupTime = localStorage.getItem('lastServerStartupTime');
+    if (!lastServerStartupTime) {
+      return true;
+    }
+    
+    const threeMinutesInMs = 3 * 60 * 1000;
+    const lastTime = parseInt(lastServerStartupTime);
+    const currentTime = new Date().getTime();
+    
+    // Show notification only if 3 minutes have passed since the last one
+    return (currentTime - lastTime) > threeMinutesInMs;
+  };
+
   // Timer effect for countdown
   useEffect(() => {
     let timer;
@@ -26,6 +41,9 @@ const Register = () => {
     } else if (countdown === 0) {
       setShowServerStartup(false);
       setCountdown(60);
+      
+      // Store the timestamp when the server startup notification completes
+      localStorage.setItem('lastServerStartupTime', new Date().getTime().toString());
     }
     return () => {
       clearInterval(timer);
@@ -43,13 +61,13 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // First check if we should show the server startup notification
-    if (!showServerStartup) {
+    // Check if we need to show the server startup notification
+    if (shouldShowStartupNotification()) {
       setShowServerStartup(true);
       return;
     }
     
-    // If we've already shown the notification and timer is complete
+    // If notification was shown recently, proceed directly
     setError('');
 
     if (formData.password !== formData.confirmPassword) {

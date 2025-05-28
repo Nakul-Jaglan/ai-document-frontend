@@ -30,9 +30,8 @@ const Navbar = () => {
                 Dashboard
               </Link>
               <a
-                href="https://github.com/yourusername/document-portal"
+                href="https://github.com/Nakul-Jaglan/"
                 target="_blank"
-                rel="noopener noreferrer"
                 className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
                 GitHub
@@ -107,7 +106,7 @@ const Navbar = () => {
                 <li>Question answering for PDF documents</li>
                 <li>JWT authentication</li>
               </ul>
-              <p className="text-gray-600">Created by Nakul</p>
+              <p className="text-gray-600">Created by <a href='https://my.newtonschool.co/user/jaat' target='_blank'>Nakul</a></p>
             </div>
           </div>
         </div>
