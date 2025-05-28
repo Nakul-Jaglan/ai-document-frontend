@@ -30,7 +30,7 @@ const Login = () => {
     return (currentTime - lastTime) > threeMinutesInMs;
   };
 
-  // Timer effect for countdown
+  // Timer effect for countdown (only for visual display)
   useEffect(() => {
     let timer;
     if (showServerStartup && countdown > 0) {
@@ -38,11 +38,8 @@ const Login = () => {
         setCountdown((prevCountdown) => prevCountdown - 1);
       }, 1000);
     } else if (countdown === 0) {
-      setShowServerStartup(false);
+      // Reset countdown for next time, but don't hide notification
       setCountdown(60);
-      
-      // Store the timestamp when the server startup notification completes
-      localStorage.setItem('lastServerStartupTime', new Date().getTime().toString());
     }
     return () => {
       clearInterval(timer);
@@ -59,19 +56,20 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Check if we need to show the server startup notification
-    if (shouldShowStartupNotification()) {
-      setShowServerStartup(true);
-      return;
-    }
-    
-    // If notification was shown recently, proceed directly
     setError('');
     setLoading(true);
 
+    // Check if we need to show the server startup notification
+    const shouldShowNotification = shouldShowStartupNotification();
+    
+    if (shouldShowNotification) {
+      setShowServerStartup(true);
+    }
+
     try {
+      // Send the login request (this will take ~1 minute if server is cold starting)
       await login(formData);
+      
       const from = location.state?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     } catch (error) {
@@ -81,6 +79,12 @@ const Login = () => {
       );
     } finally {
       setLoading(false);
+      // If we showed the notification, hide it and update timestamp
+      if (shouldShowNotification) {
+        setShowServerStartup(false);
+        setCountdown(60);
+        localStorage.setItem('lastServerStartupTime', new Date().getTime().toString());
+      }
     }
   };
 
@@ -90,10 +94,10 @@ const Login = () => {
       {showServerStartup && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full text-center">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Please wait</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Server is starting up...</h3>
             <p className="mb-6 text-gray-600">
-              Our backend server is starting up. This may take up to 1 minute. 
-              Once the timer is over, you can press Login again to complete the process.
+              Our backend server is waking up from sleep. This process typically takes about 1 minute.
+              Your login request is being processed in the background.
             </p>
             <div className="text-4xl font-bold text-blue-600 mb-6">
               {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}

@@ -60,14 +60,6 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Check if we need to show the server startup notification
-    if (shouldShowStartupNotification()) {
-      setShowServerStartup(true);
-      return;
-    }
-    
-    // If notification was shown recently, proceed directly
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
@@ -76,6 +68,13 @@ const Register = () => {
     }
 
     setLoading(true);
+    
+    // Check if we need to show the server startup notification
+    const shouldShowNotification = shouldShowStartupNotification();
+    
+    if (shouldShowNotification) {
+      setShowServerStartup(true);
+    }
 
     try {
       await register({
@@ -91,6 +90,12 @@ const Register = () => {
       );
     } finally {
       setLoading(false);
+      // If we showed the notification, hide it and update timestamp
+      if (shouldShowNotification) {
+        setShowServerStartup(false);
+        setCountdown(60);
+        localStorage.setItem('lastServerStartupTime', new Date().getTime().toString());
+      }
     }
   };
 
