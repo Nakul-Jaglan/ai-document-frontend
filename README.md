@@ -165,8 +165,11 @@ The application expects the following backend endpoints:
 ### Vercel (Recommended)
 
 1. Connect your GitHub repository to Vercel
-2. Configure environment variables in Vercel dashboard
+2. Configure environment variables in Vercel dashboard:
+   - Add `NEXT_PUBLIC_API_URL` with your backend URL
 3. Deploy automatically on push to main branch
+
+**Note**: The project includes a `vercel.json` configuration file to ensure proper deployment.
 
 ### Manual Deployment
 
