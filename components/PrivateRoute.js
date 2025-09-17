@@ -1,25 +1,25 @@
 'use client';
 
 import React from 'react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../contexts/AuthContext';
 import { useEffect } from 'react';
 
 const PrivateRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
+    if (isLoaded && !isSignedIn) {
+      router.push('/');
     }
-  }, [user, loading, router]);
+  }, [isLoaded, isSignedIn, router]);
 
-  if (loading) {
+  if (!isLoaded) {
     return <div>Loading...</div>;
   }
 
-  if (!user) {
+  if (!isSignedIn) {
     return null;
   }
 

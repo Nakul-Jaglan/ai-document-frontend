@@ -1,21 +1,21 @@
 'use client';
 
 import React from 'react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../contexts/AuthContext';
 import { useEffect } from 'react';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
+    if (isLoaded && !isSignedIn) {
+      router.push('/');
     }
-  }, [user, loading, router]);
+  }, [isLoaded, isSignedIn, router]);
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!user) {
+  if (!isSignedIn) {
     return null;
   }
 

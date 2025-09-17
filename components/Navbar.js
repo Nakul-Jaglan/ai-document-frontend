@@ -3,17 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../contexts/AuthContext';
+import { UserButton, useUser, SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
-  };
 
   return (
     <nav className="bg-white shadow-lg fixed w-full">
@@ -50,19 +45,21 @@ const Navbar = () => {
           </div>
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              {user && (
+              <SignedIn>
                 <div className="flex items-center space-x-4">
                   <span className="text-gray-700 text-sm md:text-lg">
-                    Welcome, {user.username || 'User'}
+                    Welcome, {user?.firstName || user?.username || 'User'}
                   </span>
-                  <button
-                    onClick={handleLogout}
-                    className="inline-flex cursor-pointer items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  >
-                    Logout
-                  </button>
+                  <UserButton afterSignOutUrl="/" />
                 </div>
-              )}
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="inline-flex cursor-pointer items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </SignedOut>
             </div>
           </div>
         </div>
