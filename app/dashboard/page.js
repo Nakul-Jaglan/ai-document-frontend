@@ -58,13 +58,13 @@ const Dashboard = () => {
       <div className="min-h-screen bg-gray-100">
         <Navbar />
         
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-20">
           <div className="px-4 py-6 sm:px-0">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-semibold text-gray-900">My Documents</h1>
+              <h1 className="text-xl md:text-2xl font-semibold text-gray-900">My Documents</h1>
               <button
                 onClick={() => setIsUploadModalOpen(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-2 md:px-4 py-2 text-sm cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Upload Document
               </button>

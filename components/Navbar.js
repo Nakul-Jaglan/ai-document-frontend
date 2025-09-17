@@ -16,13 +16,13 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg">
+    <nav className="bg-white shadow-lg fixed w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/dashboard" className="text-xl font-bold text-gray-800">
-                Document Portal
+              <Link href="/dashboard" className="text-xl md:text-3xl font-bold text-gray-800">
+                DocAI
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -52,7 +52,7 @@ const Navbar = () => {
             <div className="flex-shrink-0">
               {user && (
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-700">
+                  <span className="text-gray-700 text-sm md:text-lg">
                     Welcome, {user.username || 'User'}
                   </span>
                   <button
@@ -99,7 +99,7 @@ const Navbar = () => {
               <p className="text-gray-600 mb-4">
                 This Document Portal allows users to upload and manage their
                 documents, and leverages AI to answer questions about PDF
-                documents using the Gemini API.
+                documents using the Artificial Intelligence.
               </p>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Features:
