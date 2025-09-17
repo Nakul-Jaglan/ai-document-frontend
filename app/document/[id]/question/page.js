@@ -58,7 +58,7 @@ const DocumentQuestion = () => {
           <div className="mb-8">
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex items-center text-gray-600 hover:text-gray-900"
+              className="flex items-center cursor-pointer text-gray-600 hover:text-gray-900"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -82,18 +82,29 @@ const DocumentQuestion = () => {
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="Enter your question about this document..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border text-gray-900 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows="3"
                   required
                 />
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {loading ? 'Getting Answer...' : 'Ask Question'}
-              </button>
+              {question &&
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-blue-600 cursor-pointer text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {loading ? 'Getting Answer...' : 'Ask Question'}
+                </button>
+              }
+              {!question &&
+                <button
+                  type="submit"
+                  disabled={true}
+                  className="w-full bg-blue-600 cursor-not-allowed text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {loading ? 'Getting Answer...' : 'Ask Question'}
+                </button>
+              }
             </form>
 
             {error && (

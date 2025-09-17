@@ -54,7 +54,7 @@ const DocumentCard = ({ document, onDelete, onUpdate }) => {
           <div className="flex space-x-2">
             <button
               onClick={handleUpdate}
-              className="text-gray-400 hover:text-gray-500"
+              className="text-gray-400 hover:text-gray-500 cursor-pointer"
             >
               <svg
                 className="h-5 w-5"
@@ -72,7 +72,7 @@ const DocumentCard = ({ document, onDelete, onUpdate }) => {
             </button>
             <button
               onClick={handleDelete}
-              className="text-gray-400 hover:text-red-500"
+              className="text-gray-400 hover:text-red-500 cursor-pointer"
             >
               <svg
                 className="h-5 w-5"
