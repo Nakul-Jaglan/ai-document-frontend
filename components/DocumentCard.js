@@ -128,7 +128,7 @@ const DocumentCard = ({ document, onDelete, onUpdate }) => {
                 </svg>
               </button>
             </div>
-            <p className="text-gray-700 mb-4">Are you sure you want to delete the document "<span className="font-semibold">{document.title}</span>"? This action cannot be undone.</p>
+            <p className="text-gray-700 mb-4">Are you sure you want to delete the document &quot;<span className="font-semibold">{document.title}</span>&quot;? This action cannot be undone.</p>
             <div className="flex space-x-3 pt-4">
               <button
                 onClick={() => setDeleteModal(false)}
