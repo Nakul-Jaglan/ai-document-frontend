@@ -15,21 +15,37 @@ const DocumentQuestion = () => {
   const [error, setError] = useState('');
   const [document, setDocument] = useState(null);
   const [history, setHistory] = useState([]); // To store question-answer pairs
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const params = useParams();
   const router = useRouter();
   const id = params.id;
 
+  // Fetch document details and conversation history
   useEffect(() => {
-    const fetchDocument = async () => {
+    const fetchDocumentAndHistory = async () => {
       try {
-        const response = await documents.getById(id);
-        setDocument(response.data);
+        setLoadingHistory(true);
+        
+        // Fetch document details
+        const docResponse = await documents.getById(id);
+        setDocument(docResponse.data);
+        
+        // Fetch conversation history
+        const historyResponse = await documents.getConversations(id);
+        setHistory(historyResponse.data);
+        
       } catch (error) {
-        setError('Failed to fetch document details');
+        setError('Failed to fetch document details or conversation history');
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoadingHistory(false);
       }
     };
-    fetchDocument();
-  }, [id]);
+    
+    if (id) {
+      fetchDocumentAndHistory();
+    }
+  }, [id, documents]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,8 +54,18 @@ const DocumentQuestion = () => {
     try {
       const response = await documents.askQuestion(id, question);
       const newAnswer = response.data.answer;
+      const conversationId = response.data.conversation_id;
+      
+      // Create new conversation object with the same structure as backend
+      const newConversation = {
+        id: conversationId,
+        question: question,
+        answer: newAnswer,
+        created_at: new Date().toISOString()
+      };
+      
       setAnswer(newAnswer);
-      setHistory((prevHistory) => [...prevHistory, { question, answer: newAnswer }]);
+      setHistory((prevHistory) => [...prevHistory, newConversation]);
       setQuestion(''); // Clear the question input after submission
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Failed to get answer. Please try again.';
@@ -125,19 +151,31 @@ const DocumentQuestion = () => {
 
           <div className="bg-white rounded-lg shadow-md p-6 mt-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Conversation History</h2>
-            {history.length === 0 ? (
-              <p className="text-gray-600">No questions asked yet.</p>
+            {loadingHistory ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <span className="ml-2 text-gray-600">Loading conversation history...</span>
+              </div>
+            ) : history.length === 0 ? (
+              <p className="text-gray-600">No questions asked yet. Start by asking a question about this document!</p>
             ) : (
               <ul className="space-y-6">
                 {history.map((entry, index) => (
-                  <li key={index} className="bg-gray-50 rounded-lg p-4">
+                  <li key={entry.id || index} className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
                     <div className="mb-3">
-                      <span className="text-lg font-medium text-blue-600">Question:</span>
-                      <p className="text-gray-800 mt-1">{entry.question}</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-blue-600">Question:</span>
+                        {entry.created_at && (
+                          <span className="text-xs text-gray-500">
+                            {new Date(entry.created_at).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-800">{entry.question}</p>
                     </div>
                     <div>
-                      <span className="text-lg font-medium text-green-600">Answer:</span>
-                      <div className="mt-2">
+                      <span className="text-sm font-medium text-green-600 mb-2 block">Answer:</span>
+                      <div className="bg-white rounded p-3 border">
                         <FormattedAnswer answer={entry.answer} />
                       </div>
                     </div>
