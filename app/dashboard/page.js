@@ -1,15 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { documents } from '../../lib/api';
+import { useApi } from '../../lib/useApi';
 import DocumentCard from '../../components/DocumentCard';
 import UploadModal from '../../components/UploadModal';
+import UpdateModal from '../../components/UpdateModal';
 import Navbar from '../../components/Navbar';
 import PrivateRoute from '../../components/PrivateRoute';
 
 const Dashboard = () => {
+  const { documents } = useApi();
   const [documentsList, setDocumentsList] = useState([]);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -49,8 +53,20 @@ const Dashboard = () => {
   };
 
   const handleUpdate = async (document) => {
-    // Implement update functionality if needed
-    console.log('Update document:', document);
+    setSelectedDocument(document);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateSubmit = async (id, updateData) => {
+    try {
+      await documents.update(id, updateData);
+      fetchDocuments(); // Refresh the documents list
+      setIsUpdateModalOpen(false);
+      setSelectedDocument(null);
+    } catch (error) {
+      console.error('Update error:', error);
+      throw error; // Re-throw to let the modal handle the error display
+    }
   };
 
   return (
@@ -103,6 +119,16 @@ const Dashboard = () => {
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
           onUpload={handleUpload}
+        />
+
+        <UpdateModal
+          isOpen={isUpdateModalOpen}
+          onClose={() => {
+            setIsUpdateModalOpen(false);
+            setSelectedDocument(null);
+          }}
+          onUpdate={handleUpdateSubmit}
+          document={selectedDocument}
         />
       </div>
     </PrivateRoute>

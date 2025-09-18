@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { documents } from '../../../../lib/api';
+import { useApi } from '../../../../lib/useApi';
 import Navbar from '../../../../components/Navbar';
 import PrivateRoute from '../../../../components/PrivateRoute';
+import FormattedAnswer from '../../../../components/FormattedAnswer';
 
 const DocumentQuestion = () => {
+  const { documents } = useApi();
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
@@ -113,9 +115,9 @@ const DocumentQuestion = () => {
 
             {answer && (
               <div className="mt-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Answer:</h3>
-                <div className="bg-gray-50 rounded-lg p-4 text-gray-700">
-                  {answer}
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Answer:</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <FormattedAnswer answer={answer} />
                 </div>
               </div>
             )}
@@ -126,11 +128,19 @@ const DocumentQuestion = () => {
             {history.length === 0 ? (
               <p className="text-gray-600">No questions asked yet.</p>
             ) : (
-              <ul className="space-y-4">
+              <ul className="space-y-6">
                 {history.map((entry, index) => (
                   <li key={index} className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-gray-800 font-medium">Q: {entry.question}</p>
-                    <p className="text-gray-600 mt-2">A: {entry.answer}</p>
+                    <div className="mb-3">
+                      <span className="text-lg font-medium text-blue-600">Question:</span>
+                      <p className="text-gray-800 mt-1">{entry.question}</p>
+                    </div>
+                    <div>
+                      <span className="text-lg font-medium text-green-600">Answer:</span>
+                      <div className="mt-2">
+                        <FormattedAnswer answer={entry.answer} />
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>
