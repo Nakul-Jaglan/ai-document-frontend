@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import {
   SignInButton,
   SignUpButton,
@@ -11,6 +12,30 @@ import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
+
+  // Wake up the backend when the home page loads
+  useEffect(() => {
+  // Function to wake up the backend if it's sleeping
+  const wakeUpBackend = async () => {
+    try {
+      console.log('Pinging backend to wake it up...');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/health/`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(30000), // 30 second timeout
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Backend is awake:', data.message);
+      } else {
+        console.log('Backend responded but with an error:', response.status);
+      }
+    } catch (error) {
+      console.log('Error pinging backend (this is normal if it was sleeping):', error.message);
+    }
+  };    // Wake up backend immediately when page loads
+    wakeUpBackend();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-200">
